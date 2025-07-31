@@ -14,6 +14,10 @@ import gdown
 # --- Fungsi Load Resource (dengan gdown dan cache) ---
 @st.cache_resource
 def load_all_resources():
+    """
+    Fungsi ini akan mengunduh semua model dan data yang dibutuhkan dari Google Drive
+    saat aplikasi pertama kali dijalankan. Proses ini di-cache agar tidak diulang.
+    """
     # Cek dan Unduh NLTK Stopwords
     try:
         nltk.data.find('corpora/stopwords')
@@ -27,14 +31,14 @@ def load_all_resources():
 
     # GANTI DENGAN FILE ID ANDA DARI GOOGLE DRIVE
     file_ids = {
-        "rf": "GANTI_DENGAN_ID_RF_ANDA",
-        "svm": "GANTI_DENGAN_ID_SVM_ANDA",
-        "knn": "GANTI_DENGAN_ID_KNN_ANDA",
-        "bert_zip": "GANTI_DENGAN_ID_BERT_ZIP_ANDA",
-        "slang": "GANTI_DENGAN_ID_SLANG_ANDA"
+        "rf": "105xu-FQYHViUEmAcACJPaBwIO7CI8nhp",
+        "svm": "1SYFrDHRp96Fa51BajwggaIY5ONytKLlN",
+        "knn": "1jhk0feNUrNA058WcOyo3Wpzh159EBZID",
+        "bert_zip": "1DNXDvX3I7r-mqspkdnCnx4IiLinjNWUl",
+        "slang": "1AerLVwpX9eGXkKIcNGcJ8FFwEJ6XBbmA"
     }
 
-    # Path tujuan file
+    # Path tujuan file di server
     paths = {
         "rf": "models/rf_model_demo.joblib",
         "svm": "models/svm_model_demo.joblib",
@@ -58,7 +62,7 @@ def load_all_resources():
         
         if not os.path.exists(paths["slang"]): gdown.download(id=file_ids["slang"], output=paths["slang"], quiet=True)
 
-    # Load semua model dan resource
+    # Load semua model dan resource ke dalam memori
     models = {
         'Random Forest': joblib.load(paths["rf"]),
         'SVM': joblib.load(paths["svm"]),
@@ -77,7 +81,7 @@ def load_all_resources():
     
     # Kustomisasi daftar stopwords
     stopword_list = set(stopwords.words('indonesian'))
-    kata_penting_untuk_dikecualikan = ["sangat", "tidak", "kurang", "suka", "bantu", "penting", "benar"]
+    kata_penting_untuk_dikecualikan = ["sangat", "tidak", "kurang", "suka", "bantu", "penting", "benar", "aman", "tertib"]
     for kata in kata_penting_untuk_dikecualikan:
         if kata in stopword_list:
             stopword_list.remove(kata)
@@ -88,8 +92,11 @@ def load_all_resources():
 
     return models, tokenizer, bert_model, normalisasi_dict, indo_stopwords, stemmer
 
-# --- Fungsi Preprocessing dan lainnya ---
+# --- Fungsi Preprocessing dan Ekstraksi Fitur ---
 def preprocess_text(text, normalisasi_dict, indo_stopwords, stemmer):
+    """
+    Fungsi ini membersihkan teks input melalui beberapa tahap.
+    """
     text = text.lower()
     text = re.sub(r'http\S+|www.\S+', '', text)
     text = re.sub(r'[-+]?[0-9]+', '', text)
@@ -107,31 +114,38 @@ def preprocess_text(text, normalisasi_dict, indo_stopwords, stemmer):
     return text
 
 def get_bert_embedding(text, tokenizer, model):
+    """
+    Fungsi ini mengubah teks yang sudah bersih menjadi vektor fitur
+    menggunakan model IndoBERT.
+    """
     inputs = tokenizer(text, return_tensors='pt', truncation=True, padding=True, max_length=128)
     with torch.no_grad():
         outputs = model(**inputs)
     cls_embedding = outputs.last_hidden_state[:, 0, :].squeeze().numpy()
     return cls_embedding.reshape(1, -1)
 
-# Panggil fungsi utama untuk load semua resource
+# Panggil fungsi utama untuk load semua resource saat aplikasi dimulai
 models, tokenizer, bert_model, normalisasi_dict, indo_stopwords, stemmer = load_all_resources()
 
-# --- Antarmuka Streamlit ---
+# --- Antarmuka (UI) Streamlit ---
 st.set_page_config(page_title="Aplikasi Sentimen Demo", page_icon="📢")
 st.title("📢 Aplikasi Analisis Sentimen")
 st.write("Aplikasi ini menggunakan model dari notebook `demomahasiswa.ipynb`.")
 
 model_choice = st.selectbox("Pilih Model Klasifikasi:", ('Random Forest', 'SVM', 'KNN'))
-user_input = st.text_area("Masukkan teks untuk dianalisis:", "Makan gratis sangat membantu mahasiswa.", height=150)
+user_input = st.text_area("Masukkan teks untuk dianalisis:", "aksi demo berjalan dengan tertib dan aman", height=150)
 
 if st.button("Analisis Sentimen", use_container_width=True):
     if user_input:
+        # Lakukan preprocessing pada input pengguna
         cleaned_text = preprocess_text(user_input, normalisasi_dict, indo_stopwords, stemmer)
         
+        # === PERBAIKAN UTAMA ADA DI SINI ===
         # Cek jika teks menjadi kosong setelah dibersihkan untuk mencegah error
         if not cleaned_text.strip():
             st.warning("Teks yang Anda masukkan tidak mengandung kata yang dapat dianalisis setelah preprocessing. Mohon coba dengan kalimat yang lebih panjang atau berbeda.")
         else:
+            # Jika teks tidak kosong, lanjutkan proses prediksi
             with st.spinner(f'Memproses dengan model {model_choice}...'):
                 selected_model = models[model_choice]
                 bert_features = get_bert_embedding(cleaned_text, tokenizer, bert_model)
@@ -156,3 +170,4 @@ if st.button("Analisis Sentimen", use_container_width=True):
                         st.write("Tidak dapat menghitung probabilitas untuk kelas 'Positive'.")
     else:
         st.warning("Mohon masukkan teks terlebih dahulu.")
+
