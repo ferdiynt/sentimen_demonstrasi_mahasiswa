@@ -132,8 +132,8 @@ st.set_page_config(page_title="Aplikasi Sentimen Demo", page_icon="📢")
 st.title("📢 Aplikasi Analisis Sentimen")
 st.write("Aplikasi ini menggunakan model dari notebook `demomahasiswa.ipynb`.")
 
-model_choice = st.selectbox("Pilih Model Klasifikasi:", ('Random Forest', 'SVM', 'KNN'))
-user_input = st.text_area("Masukkan teks untuk dianalisis:", "aksi demo berjalan dengan tertib dan aman", height=150)
+model_choice = st.selectbox("Pilih Model Klasifikasi:", ('SVM', 'KNN'))
+user_input = st.text_area("Masukkan teks untuk dianalisis:", "mahasiswa itu baik dan ramah", height=150)
 
 if st.button("Analisis Sentimen", use_container_width=True):
     if user_input:
