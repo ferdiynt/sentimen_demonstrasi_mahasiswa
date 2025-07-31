@@ -156,7 +156,20 @@ if st.button("Analisis Sentimen", use_container_width=True):
                 print(f"Hasil prediksi (prediction_index): {prediction_index}")
                 print(f"Kelas sentimen yang tersedia (classes_): {selected_model.classes_}")
                 print(f"Jumlah kelas: {len(selected_model.classes_)}")
-                sentiment = selected_model.classes_[prediction_index[0]]
+                if prediction_index:
+                    predicted_idx = prediction_index[0]
+                    
+                    # Pastikan indeks yang diprediksi berada dalam jangkauan list `classes_`
+                    if predicted_idx < len(selected_model.classes_):
+                        sentiment = selected_model.classes_[predicted_idx]
+                    else:
+                        # Handle kasus jika indeks di luar jangkauan
+                        sentiment = "Error: Indeks prediksi tidak valid."
+                        print(f"Error: Indeks {predicted_idx} di luar jangkauan untuk list dengan panjang {len(selected_model.classes_)}")
+                else:
+                    # Handle kasus jika model tidak menghasilkan prediksi
+                    sentiment = "Gagal melakukan prediksi."
+
                 
                 st.subheader(f"Hasil Analisis (Model: {model_choice})")
                 if sentiment == "Positive":
