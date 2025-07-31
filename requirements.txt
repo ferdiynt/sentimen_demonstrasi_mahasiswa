@@ -1,0 +1,10 @@
+streamlit
+pandas
+torch
+transformers
+scikit-learn
+joblib
+nltk
+Sastrawi
+imblearn
+gdown

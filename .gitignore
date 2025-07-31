@@ -1,0 +1,7 @@
+venv/
+__pycache__/
+models/
+bert_model_demo/
+data/
+*.zip
+*.csv
