@@ -29,7 +29,7 @@ def load_all_resources():
     os.makedirs('bert_model_demo', exist_ok=True)
     os.makedirs('data', exist_ok=True)
 
-    # GANTI DENGAN FILE ID ANDA DARI GOOGLE DRIVE
+    # File ID dari Google Drive Anda
     file_ids = {
         "rf": "105xu-FQYHViUEmAcACJPaBwIO7CI8nhp",
         "svm": "1SYFrDHRp96Fa51BajwggaIY5ONytKLlN",
