@@ -29,7 +29,7 @@ def load_all_resources():
     os.makedirs('bert_model_demo', exist_ok=True)
     os.makedirs('data', exist_ok=True)
 
-    # File ID dari Google Drive Anda
+    # GANTI DENGAN FILE ID ANDA DARI GOOGLE DRIVE
     file_ids = {
         "rf": "105xu-FQYHViUEmAcACJPaBwIO7CI8nhp",
         "svm": "1SYFrDHRp96Fa51BajwggaIY5ONytKLlN",
@@ -172,3 +172,4 @@ if st.button("Analisis Sentimen", use_container_width=True):
                         st.write("Tidak dapat menghitung probabilitas untuk kelas 'Positive'.")
     else:
         st.warning("Mohon masukkan teks terlebih dahulu.")
+
