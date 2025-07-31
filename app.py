@@ -151,24 +151,18 @@ if st.button("Analisis Sentimen", use_container_width=True):
             with st.spinner(f'Memproses dengan model {model_choice}...'):
                 selected_model = models[model_choice]
                 bert_features = get_bert_embedding(cleaned_text, tokenizer, bert_model)
-                
-                prediction_index = selected_model.predict(bert_features) 
-                print(f"Hasil prediksi (prediction_index): {prediction_index}")
-                print(f"Kelas sentimen yang tersedia (classes_): {selected_model.classes_}")
-                print(f"Jumlah kelas: {len(selected_model.classes_)}")
-                if prediction_index:
-                    predicted_idx = prediction_index[0]
-                    
-                    # Pastikan indeks yang diprediksi berada dalam jangkauan list `classes_`
-                    if predicted_idx < len(selected_model.classes_):
-                        sentiment = selected_model.classes_[predicted_idx]
-                    else:
-                        # Handle kasus jika indeks di luar jangkauan
-                        sentiment = "Error: Indeks prediksi tidak valid."
-                        print(f"Error: Indeks {predicted_idx} di luar jangkauan untuk list dengan panjang {len(selected_model.classes_)}")
+
+                # Model langsung memprediksi labelnya ('Positive'/'Negative'), bukan indeks.
+                prediction = selected_model.predict(bert_features) 
+
+                # Langsung gunakan hasil prediksi tersebut
+                if prediction:
+                    sentiment = prediction[0]
                 else:
-                    # Handle kasus jika model tidak menghasilkan prediksi
-                    sentiment = "Gagal melakukan prediksi."
+                    sentiment = "Gagal melakukan prediksi." # Jaga-jaga jika prediksi gagal
+
+                # Tampilkan hasil di terminal untuk konfirmasi
+                print(f"Model: {model_choice}, Hasil Prediksi Langsung: {sentiment}")
 
                 
                 st.subheader(f"Hasil Analisis (Model: {model_choice})")
