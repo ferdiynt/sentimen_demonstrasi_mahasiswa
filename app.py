@@ -25,12 +25,13 @@ def load_all_resources():
     os.makedirs('bert_model_demo', exist_ok=True)
     os.makedirs('data', exist_ok=True)
 
+    # GANTI DENGAN FILE ID ANDA DARI GOOGLE DRIVE
     file_ids = {
-        "rf": "105xu-FQYHViUEmAcACJPaBwIO7CI8nhp",
-        "svm": "1SYFrDHRp96Fa51BajwggaIY5ONytKLlN",
-        "knn": "1jhk0feNUrNA058WcOyo3Wpzh159EBZID",
-        "bert_zip": "1DNXDvX3I7r-mqspkdnCnx4IiLinjNWUl",
-        "slang": "1AerLVwpX9eGXkKIcNGcJ8FFwEJ6XBbmA"
+        "rf": "GANTI_DENGAN_ID_RF_ANDA",
+        "svm": "GANTI_DENGAN_ID_SVM_ANDA",
+        "knn": "GANTI_DENGAN_ID_KNN_ANDA",
+        "bert_zip": "GANTI_DENGAN_ID_BERT_ZIP_ANDA",
+        "slang": "GANTI_DENGAN_ID_SLANG_ANDA"
     }
 
     # Path tujuan file
@@ -76,8 +77,7 @@ def load_all_resources():
     
     # Kustomisasi daftar stopwords
     stopword_list = set(stopwords.words('indonesian'))
-    # Anda bisa menambahkan kata lain di sini jika perlu
-    kata_penting_untuk_dikecualikan = ["tidak", "jangan", "tolak"]
+    kata_penting_untuk_dikecualikan = ["sangat", "tidak", "kurang", "suka", "bantu", "penting", "benar"]
     for kata in kata_penting_untuk_dikecualikan:
         if kata in stopword_list:
             stopword_list.remove(kata)
@@ -117,20 +117,20 @@ def get_bert_embedding(text, tokenizer, model):
 models, tokenizer, bert_model, normalisasi_dict, indo_stopwords, stemmer = load_all_resources()
 
 # --- Antarmuka Streamlit ---
-st.set_page_config(page_title="Analisis Sentimen Demo Mahasiswa", page_icon="📢")
-st.title("📢 Aplikasi Analisis Sentimen Demo Mahasiswa")
+st.set_page_config(page_title="Aplikasi Sentimen Demo", page_icon="📢")
+st.title("📢 Aplikasi Analisis Sentimen")
 st.write("Aplikasi ini menggunakan model dari notebook `demomahasiswa.ipynb`.")
 
 model_choice = st.selectbox("Pilih Model Klasifikasi:", ('Random Forest', 'SVM', 'KNN'))
-user_input = st.text_area("Masukkan teks untuk dianalisis:", "Saya menolak kebijakan baru itu, ayo demo!", height=150)
+user_input = st.text_area("Masukkan teks untuk dianalisis:", "Makan gratis sangat membantu mahasiswa.", height=150)
 
 if st.button("Analisis Sentimen", use_container_width=True):
     if user_input:
         cleaned_text = preprocess_text(user_input, normalisasi_dict, indo_stopwords, stemmer)
         
-        # Cek jika teks menjadi kosong setelah dibersihkan
+        # Cek jika teks menjadi kosong setelah dibersihkan untuk mencegah error
         if not cleaned_text.strip():
-            st.warning("Teks yang Anda masukkan tidak mengandung kata yang dapat dianalisis setelah preprocessing. Mohon coba dengan kalimat yang lebih panjang.")
+            st.warning("Teks yang Anda masukkan tidak mengandung kata yang dapat dianalisis setelah preprocessing. Mohon coba dengan kalimat yang lebih panjang atau berbeda.")
         else:
             with st.spinner(f'Memproses dengan model {model_choice}...'):
                 selected_model = models[model_choice]
@@ -154,6 +154,5 @@ if st.button("Analisis Sentimen", use_container_width=True):
                         st.write(f"Positif: `{positive_proba:.2%}`")
                     except ValueError:
                         st.write("Tidak dapat menghitung probabilitas untuk kelas 'Positive'.")
-
     else:
         st.warning("Mohon masukkan teks terlebih dahulu.")
