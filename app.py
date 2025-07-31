@@ -94,6 +94,9 @@ def load_all_resources():
 
 # --- Fungsi Preprocessing dan Ekstraksi Fitur ---
 def preprocess_text(text, normalisasi_dict, indo_stopwords, stemmer):
+    """
+    Fungsi ini membersihkan teks input melalui beberapa tahap.
+    """
     text = text.lower()
     text = re.sub(r'http\S+|www.\S+', '', text)
     text = re.sub(r'[-+]?[0-9]+', '', text)
@@ -111,6 +114,10 @@ def preprocess_text(text, normalisasi_dict, indo_stopwords, stemmer):
     return text
 
 def get_bert_embedding(text, tokenizer, model):
+    """
+    Fungsi ini mengubah teks yang sudah bersih menjadi vektor fitur
+    menggunakan model IndoBERT.
+    """
     inputs = tokenizer(text, return_tensors='pt', truncation=True, padding=True, max_length=128)
     with torch.no_grad():
         outputs = model(**inputs)
