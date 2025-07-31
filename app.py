@@ -153,6 +153,9 @@ if st.button("Analisis Sentimen", use_container_width=True):
                 bert_features = get_bert_embedding(cleaned_text, tokenizer, bert_model)
                 
                 prediction_index = selected_model.predict(bert_features) 
+                print(f"Hasil prediksi (prediction_index): {prediction_index}")
+                print(f"Kelas sentimen yang tersedia (classes_): {selected_model.classes_}")
+                print(f"Jumlah kelas: {len(selected_model.classes_)}")
                 sentiment = selected_model.classes_[prediction_index[0]]
                 
                 st.subheader(f"Hasil Analisis (Model: {model_choice})")
